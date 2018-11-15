@@ -77,3 +77,36 @@ void turn_degrees_arc(double degrees , double radius, int direction){
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+void turn_degrees_arc(double degrees , double radius, int direction){
+    printf("%lf\n",degrees);
+    double sum = average();
+    double bias = average(); 
+    double real_gyro= 0;
+    double counter = 0;
+    double last_gyro = 0;
+    if(direction == 0){
+        while(sum < ((75000*1.03)/90)*degrees){
+            real_gyro = abs(gyro_z()-bias);
+            sum+=real_gyro;
+            mrp(0,speed_wheel(radius),9);
+            mrp(1,SPEEDC,15);
+            //printf("%lf\n",sum);
+            printf("%lf\n",sum-last_gyro);
+            last_gyro = sum;
+            counter++;
+            
+            //19.75in radius for left:600 & right:800
+        }
+        printf("%lf\n",(sum/counter));
