@@ -38,75 +38,57 @@ int average(){
         z+=gyro_z();
         //printf("counter:%i  |  %lf\n",counter,z);
     }
-    printf("%lf",z/1000);
+    printf("%lf\n",z/1000);
     return (z/1000);
 }
 
-/*double speed_left_wheel(double radius){
-    return (radius-3.153)/0.02511;
-
-}*/
-
 double speed_wheel(double radius){
-    double ratio =(-6.358/(radius+6.74076))+1.041;
+    double ratio =(-6.4/((radius/2.54)+6.30))+1.041;// - 6.358  6.74076
     return (SPEEDC*ratio);  
 }
-
-void turn_degrees_arc(double degrees , double radius, int direction){
-    printf("%lf\n",degrees);
-    double sum = average();
-    if(direction == 0){
-        while(sum < ((75000*1.048)/90)*degrees){
-            sum+=gyro_z();
-            mrp(0,speed_wheel(radius),9);
-            mrp(1,SPEEDC,15);
-            printf("%lf\n",sum);
-            //19.75in radius for left:600 & right:800
-        }
-    }
-    else{
-        while(sum > (((7500*1.048))*degrees)*-1){
-            sum+=gyro_z();
-            mrp(0,SPEEDC,15);
-            mrp(1,speed_wheel(radius),9);
-            //printf("%lf\n",sum);
-            //19.75in radius for left:600 & right:800
-        }
-    }
-
-
+double speed_wheel2(double radius) {
+    double ratio =((-23.0757/(radius+20.6761))-(0.00229346*radius)+(1.22057));
+    return (SPEEDC*ratio);
+    printf("/t RATIO: %lf\n",ratio);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 void turn_degrees_arc(double degrees , double radius, int direction){
+    cmpc(RIGHT);
     printf("%lf\n",degrees);
-    double sum = average();
+//    double sum = 2*average();
     double bias = average(); 
+    double sum = 0;
     double real_gyro= 0;
     double counter = 0;
     double last_gyro = 0;
     if(direction == 0){
-        while(sum < ((75000*1.03)/90)*degrees){
-            real_gyro = abs(gyro_z()-bias);
-            sum+=real_gyro;
-            mrp(0,speed_wheel(radius),9);
-            mrp(1,SPEEDC,15);
+        while(sum <= ((75000*1.12)/90)*degrees){
+            mrp(0,speed_wheel2(radius),9);//speed_wheel(radius)*(1/LIMITER),9);
+            mrp(1,800,15);
             //printf("%lf\n",sum);
-            printf("%lf\n",sum-last_gyro);
+            //printf("%lf\n",sum-last_gyro);
             last_gyro = sum;
             counter++;
-            
+            real_gyro = gyro_z()-bias;
+            sum+=real_gyro;
             //19.75in radius for left:600 & right:800
         }
-        printf("%lf\n",(sum/counter));
+    }
+    else{
+        while(sum <= (((75000*1.05)/90)*degrees)){
+            mrp(0,SPEEDC,15);
+            mrp(1,speed_wheel2(radius)*LIMITER,9);
+            //printf("%lf\n",sum);
+            real_gyro = abs(gyro_z()-bias);
+            sum+=real_gyro;
+            //19.75in radius for left:600 & right:800
+        }
+        
+    }   
+		printf("Bias:%lf\n",bias);
+        printf("Average Gyro Turn%lf\n",(sum/counter));
+        printf("\t GMPC:%i\n",(gmpc(RIGHT)));
+
+}
+
+
