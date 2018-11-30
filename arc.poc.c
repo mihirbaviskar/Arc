@@ -120,8 +120,10 @@ void turn_degrees_arc_ellipse(double degrees , double rmax, double rmin, int dir
     double counter = 0;
     double last_gyro = 0;
     double radius = rmax;
-    double diff = rmax - rmin;  
+    double diff = rmax - rmin;
+    double percent;
     if(direction == 0){
+        percent = sum/(((75000*1.12)/90)*degrees);
         while(sum <= ((75000*1.12)/90)*degrees){
             mrp(0,speed_wheel2(radius),9);//speed_wheel(radius)*(1/LIMITER),9);
             mrp(1,800,15);
@@ -131,7 +133,8 @@ void turn_degrees_arc_ellipse(double degrees , double rmax, double rmin, int dir
             counter++;
             real_gyro = gyro_z()-bias;
             sum+=real_gyro;
-            radius = rmax - diff*(sum/(((75000*1.12)/90)*degrees));
+            //radius = rmax - diff*(sum/(((75000*1.12)/90)*degrees));
+	    radius  = rmax - (sqrt(((45*percent*percent)/9)+4)*diff-2);
             //19.75in radius for left:600 & right:800
         }
     }
