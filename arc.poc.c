@@ -110,7 +110,7 @@ radius = rmax - ( sum1/75000*1.12 ) * 3
 
 
 
-void turn_degrees_arc_ellipse(double degrees , double rmax, double rmin, int direction){
+void turn_degrees_arc_ellipse(double degrees , double rstart, double rend, int direction){
     cmpc(RIGHT);
     printf("%lf\n",degrees);
 //    double sum = 2*average();
@@ -119,22 +119,23 @@ void turn_degrees_arc_ellipse(double degrees , double rmax, double rmin, int dir
     double real_gyro= 0;
     double counter = 0;
     double last_gyro = 0;
-    double radius = rmax;
-    double diff = rmax - rmin;
+    double radius = rstart;
+    double diff = rstart - rend;
     double percent;
     if(direction == 0){
-        percent = sum/(((75000*1.12)/90)*degrees);
         while(sum <= ((75000*1.12)/90)*degrees){
+	    percent = sum/(75000*1.12);
             mrp(0,speed_wheel2(radius),9);//speed_wheel(radius)*(1/LIMITER),9);
-            mrp(1,800,15);
+            mrp(1,SPEEDC,15);
             //printf("%lf\n",sum);
             //printf("%lf\n",sum-last_gyro);
-            last_gyro = sum;
+            //last_gyro = sum;
             counter++;
             real_gyro = gyro_z()-bias;
             sum+=real_gyro;
             //radius = rmax - diff*(sum/(((75000*1.12)/90)*degrees));
-	    radius  = rmax - (sqrt(((45*percent*percent)/9)+4)*diff-2);
+	    //radius  = rmax - (sqrt(((45*percent*percent)/9)+4)*diff-2);
+	    radius  = sqrt(((percent-1)*(percent-1)*(rstart*rstart-rend*rend))+rend*rend);
             //19.75in radius for left:600 & right:800
         }
     }
@@ -145,6 +146,7 @@ void turn_degrees_arc_ellipse(double degrees , double rmax, double rmin, int dir
             //printf("%lf\n",sum);
             real_gyro = abs(gyro_z()-bias);
             sum+=real_gyro;
+	    radius  = sqrt(((percent-1)*(percent-1)*(rstart*rstart-rend*rend))+rend*rend);
             //19.75in radius for left:600 & right:800
         }
         
