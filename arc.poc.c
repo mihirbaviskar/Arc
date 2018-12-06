@@ -113,7 +113,6 @@ radius = rmax - ( sum1/75000*1.12 ) * 3
 void turn_degrees_arc_ellipse(double degrees , double rstart, double rend, int direction){
     cmpc(RIGHT);
     printf("%lf\n",degrees);
-//    double sum = 2*average();
     double bias = average(); 
     double sum = 0;
     double real_gyro= 0;
@@ -121,37 +120,34 @@ void turn_degrees_arc_ellipse(double degrees , double rstart, double rend, int d
     double last_gyro = 0;
     double radius = rstart;
     double diff = rstart - rend;
-    double percent;
+    double degrees_turned;
     if(direction == 0){
-        while(sum <= ((75000*1.12)/90)*degrees){
-	    percent = sum/(75000*1.12);
-            mrp(0,speed_wheel2(radius),9);//speed_wheel(radius)*(1/LIMITER),9);
+        while(sum <= ((120000*1.12)/90)*degrees){
+	    degrees_turned = sum/(120000*1.12);
+            mrp(0,speed_wheel2(radius),9);
             mrp(1,SPEEDC,15);
-            //printf("%lf\n",sum);
-            //printf("%lf\n",sum-last_gyro);
-            //last_gyro = sum;
-            counter++;
             real_gyro = gyro_z()-bias;
             sum+=real_gyro;
             //radius = rmax - diff*(sum/(((75000*1.12)/90)*degrees));
 	    //radius  = rmax - (sqrt(((45*percent*percent)/9)+4)*diff-2);
-	    radius  = sqrt(((percent-1)*(percent-1)*(rstart*rstart-rend*rend))+rend*rend);
+	    radius  = sqrt(((pow(rstart,4)*pow(tan(degrees_turned),2)+pow(rend,4))/(pow(rend,2)+pow(rstart,2)*pow(tan(degrees_turned),2))));
             //19.75in radius for left:600 & right:800
         }
     }
     else{
-        while(sum <= (((75000*1.05)/90)*degrees)){
+        while(sum <= (((120000*1.05)/90)*degrees)){
             mrp(0,SPEEDC,15);
             mrp(1,speed_wheel2(radius)*LIMITER,9);
-            //printf("%lf\n",sum);
             real_gyro = abs(gyro_z()-bias);
             sum+=real_gyro;
-	    radius  = sqrt(((percent-1)*(percent-1)*(rstart*rstart-rend*rend))+rend*rend);
+	    degrees_turned = sum/(120000*1.05);
+	    //radius  = sqrt(((percent-1)*(percent-1)*(rstart*rstart-rend*rend))+rend*rend);
+	    radius  = sqrt(((pow(rstart,4)*pow(tan(degrees_turned),2)+pow(rend,4))/(pow(rend,2)+pow(rstart,2)*pow(tan(degrees_turned),2))));
             //19.75in radius for left:600 & right:800
         }
         
     }   
-		printf("Bias:%lf\n",bias);
+        printf("Bias:%lf\n",bias);
         printf("Average Gyro Turn%lf\n",(sum/counter));
         printf("\t GMPC:%i\n",(gmpc(RIGHT)));
 
