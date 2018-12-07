@@ -130,7 +130,8 @@ void turn_degrees_arc_ellipse(double degrees , double rstart, double rend, int d
             sum+=real_gyro;
             //radius = rmax - diff*(sum/(((75000*1.12)/90)*degrees));
 	    //radius  = rmax - (sqrt(((45*percent*percent)/9)+4)*diff-2);
-	    radius  = sqrt(((pow(rstart,4)*pow(tan(degrees_turned),2)+pow(rend,4))/(pow(rend,2)+pow(rstart,2)*pow(tan(degrees_turned),2))));
+	    radius  = sqrt(((pow(rend,4)*pow(tan(degrees_turned),2)+pow(rstart,4))/(pow(rstart,2)+pow(rend,2)*pow(tan(degrees_turned),2))));
+
             //19.75in radius for left:600 & right:800
         }
     }
@@ -138,11 +139,12 @@ void turn_degrees_arc_ellipse(double degrees , double rstart, double rend, int d
         while(sum <= (((120000*1.05)/90)*degrees)){
             mrp(0,SPEEDC,15);
             mrp(1,speed_wheel2(radius)*LIMITER,9);
-            real_gyro = abs(gyro_z()-bias);
+            real_gyro = gyro_z()-bias;
             sum+=real_gyro;
-	    degrees_turned = sum/(120000*1.05);
+	    degrees_turned = -sum/(120000*1.05);
 	    //radius  = sqrt(((percent-1)*(percent-1)*(rstart*rstart-rend*rend))+rend*rend);
-	    radius  = sqrt(((pow(rstart,4)*pow(tan(degrees_turned),2)+pow(rend,4))/(pow(rend,2)+pow(rstart,2)*pow(tan(degrees_turned),2))));
+	    radius  = sqrt(((pow(rend,4)*pow(tan(degrees_turned),2)+pow(rstart,4))/(pow(rstart,2)+pow(rend,2)*pow(tan(degrees_turned),2))));
+
             //19.75in radius for left:600 & right:800
         }
         
