@@ -6,6 +6,7 @@
 #define LEFT 0
 #define RIGHT 1
 #define LIMITER 0.9525
+//https://www.desmos.com/calculator/sa2lqrzxdi
 //defines-----------------------------------------------------------------------------------
 
 //end of gobal varaibles -===-=-=-=-=-=-==--=-=-=--------------------------=-=-=-=-=-=-=-=-=
